@@ -128,6 +128,7 @@ class LadybugPerspective {
 
     const deltaTime = this.clock.getDelta();
     this.camera.update(deltaTime);
+    this.scene.update(deltaTime);
     this.renderer.render(this.scene.scene, this.camera.camera);
   }
 
