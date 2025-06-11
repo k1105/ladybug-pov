@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ladybug Perspective</title>
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div id="loading">Loading...</div>
+    <div id="canvas-container"></div>
+    <div id="joystick-container">
+      <div id="joystick-base">
+        <div id="joystick-knob"></div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/Renderer.js"></script>
+    <script src="js/Camera.js"></script>
+    <script src="js/Scene.js"></script>
+    <script src="js/Joystick.js"></script>
+    <script src="js/LadybugPerspective.js"></script>
+    <script>
+      // Start the application
+      new LadybugPerspective();
+    </script>
+  </body>
+</html>
