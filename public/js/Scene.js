@@ -9,13 +9,21 @@ class Scene {
     this.scene = new THREE.Scene();
 
     // Load and set up sky environment map
-    const exrLoader = new THREE.EXRLoader();
-    exrLoader.load("/public/texture/sky.exr", (texture) => {
+    const rgbeLoader = new THREE.RGBELoader();
+    rgbeLoader.setPath("/public/texture/");
+    rgbeLoader.setDataType(THREE.FloatType); // 高精度なデータ型を使用
+    rgbeLoader.load("sky.hdr", (texture) => {
       texture.mapping = THREE.EquirectangularReflectionMapping;
 
-      // トーンマッピングの設定
-      this.scene.toneMapping = THREE.ReinhardToneMapping; // より自然な見た目のトーンマッピング
-      this.scene.toneMappingExposure = 10; // 明るさを少し上げる
+      // テクスチャのフィルタリング設定を改善
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.encoding = THREE.sRGBEncoding;
+      texture.generateMipmaps = true;
+
+      // トーンマッピングの設定を調整
+      this.scene.toneMapping = THREE.CineonToneMapping; // より自然な色味のトーンマッピング
+      this.scene.toneMappingExposure = 0.35; // 露出をさらに下げて彩度を抑制
 
       this.scene.environment = texture;
       this.scene.background = texture;
@@ -25,10 +33,10 @@ class Scene {
     this.scene.fog = new THREE.Fog(0xbfdfff, 15, 80); // ← near/far 調整
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.35); // 環境光をさらに弱める
     this.scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); // 直射光も弱める
     directionalLight.position.set(10, 10, 5);
     this.scene.add(directionalLight);
 
@@ -58,15 +66,16 @@ class Scene {
     const groundGeometry = new THREE.PlaneGeometry(200, 200);
 
     // Create PBR material
-
     const groundMaterial = new THREE.MeshStandardMaterial({
       map: colorMap,
       normalMap: normalMap,
       roughnessMap: roughnessMap,
-      roughness: 0.7,
+      roughness: 1.0, // 完全にマットな見た目に
+      metalness: 0.0,
+      envMapIntensity: 0.0, // 環境反射を完全に無効化
     });
 
-    groundMaterial.normalScale.set(10, 10);
+    groundMaterial.normalScale.set(2, 2); // 法線マップの強度をさらに下げる
 
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
@@ -125,8 +134,13 @@ class Scene {
       transparent: true,
       alphaTest: 0.5,
       side: THREE.DoubleSide,
-      roughness: 0.8,
+      roughness: 1.0, // 完全にマットな見た目に
+      metalness: 0.0,
+      envMapIntensity: 0.0, // 環境反射を完全に無効化
     });
+
+    // 法線マップの強度を下げる
+    grassMaterial.normalScale.set(2, 2);
 
     // Create instanced mesh
     const instancedGrass = new THREE.InstancedMesh(
